@@ -1,0 +1,6 @@
+{
+  "name": "TrueLens AI",
+  "description": "Analyse images and videos to estimate the likelihood of AI generation with forensic visual indicators and frame-by-frame analysis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      // Defensively safeguard window.fetch in iframe/preview environment
+      // where external extensions, inspection tools, or polyfills attempt assignment (window.fetch = ...)
+      try {
+        const originalFetch = window.fetch;
+        let currentFetch = originalFetch;
+        Object.defineProperty(window, 'fetch', {
+          configurable: true,
+          enumerable: true,
+          get() {
+            return currentFetch;
+          },
+          set(newFetch) {
+            currentFetch = newFetch;
+          },
+        });
+      } catch (e) {
+        // Fallback or ignore if environment restricts descriptor changes
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrueLens AI - Image & Video AI Generation Analysis</title>
+    <meta name="description" content="Analyse images and videos to estimate the likelihood of AI generation with forensic visual indicators and frame-by-frame analysis." />
+    <meta property="og:title" content="TrueLens AI - Image & Video AI Generation Analysis" />
+    <meta property="og:description" content="Analyse images and videos to estimate the likelihood of AI generation with forensic visual indicators and frame-by-frame analysis." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-neutral-950 text-neutral-100 antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
