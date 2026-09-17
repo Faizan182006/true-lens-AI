@@ -16,6 +16,7 @@ import { SessionHistoryModal } from './components/SessionHistoryModal';
 import { FrameInspectorModal } from './components/FrameInspectorModal';
 import { extractVideoFrames } from './utils/frameExtractor';
 import { extractMediaMetadata } from './utils/exifReader';
+import { optimizeImageForAnalysis } from './utils/imageOptimizer';
 import { SampleMediaItem } from './utils/sampleMedia';
 import { AnalysisResult, MediaType, VideoFrame } from './types';
 import { AlertTriangle, Sparkles, Shield, RefreshCw } from 'lucide-react';
@@ -108,17 +109,14 @@ export default function App() {
       setMetadata(extractedMeta);
 
       if (resolvedType === 'image') {
-        // Convert to base64 for API
+        // Convert to optimized base64 for API (downscales if >1600px, preserves visual forensic fidelity)
         setPrepProgress(60);
         setPrepMessage('Optimizing image representation...');
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setBase64Data(reader.result as string);
-          setVideoFrames([]);
-          setPrepProgress(100);
-          setIsPreparingMedia(false);
-        };
-        reader.readAsDataURL(file);
+        const optimizedBase64 = await optimizeImageForAnalysis(file);
+        setBase64Data(optimizedBase64);
+        setVideoFrames([]);
+        setPrepProgress(100);
+        setIsPreparingMedia(false);
       } else {
         // Extract 5 representative video keyframes
         setPrepProgress(40);
@@ -196,10 +194,25 @@ export default function App() {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      let data: any = null;
+      const rawResponseText = await res.text();
+      try {
+        data = JSON.parse(rawResponseText);
+      } catch {
+        // Non-JSON response (e.g. proxy HTML error page, 502/504 gateway timeout, or 413)
+        if (!res.ok) {
+          throw new Error(
+            res.status === 413
+              ? 'The uploaded file is too large for transmission. Please try a smaller image or video.'
+              : `The analysis service returned an unexpected server response (${res.status}). Please retry in a few moments.`
+          );
+        } else {
+          throw new Error('Received unexpected response format from server. Please click Retry Analysis.');
+        }
+      }
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to complete media forensic analysis.');
+        throw new Error(data?.error || 'Failed to complete media forensic analysis.');
       }
 
       const completeResult: AnalysisResult = {

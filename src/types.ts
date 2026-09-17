@@ -54,6 +54,8 @@ export interface AnalysisResult {
   exifData?: Record<string, string>;
   isReliable: boolean;
   unreliableReason?: string;
+  engine?: string;
+  isOfflineFallback?: boolean;
 }
 
 export interface AnalysisRequestPayload {

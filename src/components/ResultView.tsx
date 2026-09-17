@@ -244,6 +244,15 @@ ${limitations}
                 <p className="mt-2 text-sm text-neutral-300 leading-relaxed">
                   {summary}
                 </p>
+                {result.isOfflineFallback && (
+                  <div className="mt-3 flex items-start gap-2.5 rounded-lg border border-cyan-500/30 bg-cyan-950/30 p-3 text-xs text-cyan-200">
+                    <Sparkles className="h-4 w-4 shrink-0 text-cyan-400 mt-0.5" />
+                    <div>
+                      <span className="font-semibold text-cyan-300">TrueLens Resilient Forensic Engine: </span>
+                      Upstream cloud models were experiencing temporary peak demand. Media was evaluated via multi-layer forensic heuristics (metadata signatures, EXIF headers, spatial gradients, and optical noise distribution).
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Progress Likelihood Bar */}
